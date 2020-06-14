@@ -1,0 +1,105 @@
+<head>
+    <title>Nursing Schedule</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" href="./suitcase.png" />
+    <link rel="apple-touch-icon" href="./suitcase.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+
+<style>
+    .bottom {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+    }
+
+    #datepicker {
+        margin-bottom: 30px;
+    }
+
+    #button, #datepicker {
+        width: 100%;
+        text-align: center;
+    }
+
+    #result {
+        width: 100%;
+        text-align: center;
+    }
+
+    .container {
+        display: table-cell;
+        vertical-align: middle;
+        height: 80vh;
+    }
+</style>
+
+<body>
+    <div class="container">
+      <h1 id="result">You work today</h1>
+    </div>
+    <div class="bottom">
+        <input id="datepicker" onchange="render()" type="text" class="datepicker">
+        <br>
+        <button id="button" class="blue btn-large waves-effect" onclick="pickDate()">Pick date</button>
+    </div>
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/moment@2.26.0/moment.min.js'></script>
+<script>
+
+    function pickDate() {
+        $("#datepicker").click();
+    }
+
+    function render() {
+        const today = moment();
+        const todayFormatted = today.format("MMM DD, YYYY");
+        const thenFormatted = $("#datepicker")[0].value;
+        const then = moment(thenFormatted, "MMM DD, YYYY");
+        let isToday = "false";
+        if (todayFormatted == thenFormatted) {
+            isToday = 'true';
+        }
+        const isWork = getIsWork(then);
+        let resultText = {
+            "true-true": "You work today",
+            "false-true": "You don't work today",
+            "true-false": "You work on $_$",
+            "false-false": "You don't work on $_$"
+        }[`${isWork}-${isToday}`];
+        if (resultText.includes("$_$")) {
+            const dayText = then.format("dddd, MMMM D YYYY");
+            resultText = resultText.replace("$_$", dayText);
+        }
+        $("#result").text(resultText);
+    }
+
+    function getIsWork(thenMoment) {
+        const refMoment = moment("June 13, 2020", "MMMM DD YYYY");
+        let daysNumber = thenMoment.diff(refMoment, "days");
+        daysNumber += 14;
+        daysNumber %= 14;
+        let resultText = "false";
+        if ([0, 1, 2, 6, 11, 12]) {
+            resultText = "true";
+        }
+        return resultText;
+    }
+
+    function main() {
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.datepicker');
+            var instances = M.Datepicker.init(elems, { autoClose: true });
+        });
+        const today = moment();
+        $("#datepicker")[0].value = today.format("MMM DD, YYYY");
+        render();
+    }
+
+    main();
+
+</script>

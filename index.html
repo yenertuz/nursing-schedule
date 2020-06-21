@@ -66,15 +66,11 @@
         }
         const isWork = getIsWork(then);
         let resultText = {
-            "true-true": "You work today",
-            "false-true": "You don't work today",
-            "true-false": "You work on $_$",
-            "false-false": "You don't work on $_$"
+            "true-true": "You work today.",
+            "false-true": "No work today.",
+            "true-false": "You work.",
+            "false-false": "No work."
         }[`${isWork}-${isToday}`];
-        if (resultText.includes("$_$")) {
-            const dayText = then.format("dddd, MMMM D YYYY");
-            resultText = resultText.replace("$_$", dayText);
-        }
         $("#result").text(resultText);
     }
 
